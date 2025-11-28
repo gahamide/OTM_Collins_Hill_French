@@ -482,16 +482,21 @@ export default function Home() {
     [updateLastInteraction],
   )
 
-  // Update the copyAndSearchOTM function to copy contact name and use the new URL
+  // Update the copyAndSearchOTM function to copy contact address and use the new URL
   const copyAndSearchOTM = useCallback(
     async (contact: EnhancedContact) => {
-      // Copy the contact name to the clipboard
+      // Parse the address to extract only house number and street address
+      const { houseNumber, direction, streetName } = parseAddress(contact.address)
+      // Combine house number, direction (if present), and street name
+      const addressToCopy = [houseNumber, direction, streetName].filter(Boolean).join(" ").trim()
+      
+      // Copy the house number and street address to the clipboard
       try {
-        await navigator.clipboard.writeText(contact.fullName)
+        await navigator.clipboard.writeText(addressToCopy || contact.address)
         setCopiedId(contact.id)
       } catch (err) {
-        console.error("Failed to copy contact name: ", err)
-        alert("Failed to copy contact name to clipboard")
+        console.error("Failed to copy contact address: ", err)
+        alert("Failed to copy contact address to clipboard")
         return
       }
 
@@ -2515,7 +2520,7 @@ export default function Home() {
                                   )}
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent>Copy Name & Open OTM</TooltipContent>
+                              <TooltipContent>Copy Address & Open OTM</TooltipContent>
                             </Tooltip>
                           </div>
                         </CardFooter>
