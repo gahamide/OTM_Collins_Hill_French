@@ -48,7 +48,6 @@ achi
 achu
 achuo
 ada
-adam
 adama
 adamou
 adamu
@@ -1233,6 +1232,7 @@ guede
 gueguen
 guehi
 guei
+guerin
 guen
 guerin
 guessous
@@ -1251,6 +1251,7 @@ guillon
 guillot
 guillou
 guilloux
+guinand
 guiraud
 guitton
 guy
