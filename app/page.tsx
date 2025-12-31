@@ -426,7 +426,7 @@ export default function Home() {
         // Run detection automatically after import (non-blocking)
         setTimeout(() => {
           try {
-            ;(detectFrenchNames as any)?.(false, processedContacts)
+            ; (detectFrenchNames as any)?.(false, processedContacts)
           } catch (e) {
             console.warn("detectFrenchNames not available yet", e)
           }
@@ -482,16 +482,21 @@ export default function Home() {
     [updateLastInteraction],
   )
 
-  // Update the copyAndSearchOTM function to copy contact name and use the new URL
+  // Update the copyAndSearchOTM function to copy contact address and use the new URL
   const copyAndSearchOTM = useCallback(
     async (contact: EnhancedContact) => {
-      // Copy the contact name to the clipboard
+      // Parse the address to extract only house number and street address
+      const { houseNumber, direction, streetName } = parseAddress(contact.address)
+      // Combine house number, direction (if present), and street name
+      const addressToCopy = [houseNumber, direction, streetName].filter(Boolean).join(" ").trim()
+      
+      // Copy the house number and street address to the clipboard
       try {
-        await navigator.clipboard.writeText(contact.fullName)
+        await navigator.clipboard.writeText(addressToCopy || contact.address)
         setCopiedId(contact.id)
       } catch (err) {
-        console.error("Failed to copy contact name: ", err)
-        alert("Failed to copy contact name to clipboard")
+        console.error("Failed to copy contact address: ", err)
+        alert("Failed to copy contact address to clipboard")
         return
       }
 
@@ -518,8 +523,8 @@ export default function Home() {
         return
       }
 
-  // Create the Forebears search URL
-  // forebears expects lowercase surname in the path; normalize and urlencode
+      // Create the Forebears search URL
+      // forebears expects lowercase surname in the path; normalize and urlencode
       const surnameForUrl = String(contact.lastName || "")
         .trim()
         .toLowerCase()
@@ -613,9 +618,8 @@ export default function Home() {
 
         // If we're updating first or last name, recalculate the full name
         if (field === "firstName" || field === "lastName") {
-          updatedContact.fullName = `${field === "firstName" ? value : contact.firstName} ${
-            field === "lastName" ? value : contact.lastName
-          }`.trim()
+          updatedContact.fullName = `${field === "firstName" ? value : contact.firstName} ${field === "lastName" ? value : contact.lastName
+            }`.trim()
         }
 
         return updatedContact
@@ -896,11 +900,11 @@ export default function Home() {
     const subject = encodeURIComponent("OTM Helper Data")
     const body = encodeURIComponent(
       "Please find attached the OTM Helper data.\n\n" +
-        "To use this data:\n" +
-        "1. Save the JSON content below to a file with .json extension\n" +
-        "2. Import it using the Import button in the OTM Helper app\n\n" +
-        "--- JSON DATA BELOW ---\n\n" +
-        jsonString,
+      "To use this data:\n" +
+      "1. Save the JSON content below to a file with .json extension\n" +
+      "2. Import it using the Import button in the OTM Helper app\n\n" +
+      "--- JSON DATA BELOW ---\n\n" +
+      jsonString,
     )
 
     window.location.href = `mailto:?subject=${subject}&body=${body}`
@@ -1065,7 +1069,7 @@ export default function Home() {
 
     // Show success message
     alert(`Successfully exported ${frenchContacts.length} Potentially French contacts to CSV`)
-    
+
     // Close dialog and reset state value
     setIsExportStateDialogOpen(false)
     setExportStateValue("")
@@ -1316,16 +1320,16 @@ export default function Home() {
                 <TooltipContent>Import JSON data file</TooltipContent>
               </Tooltip>
 
-                {/* Add Contact Button */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={() => setIsAddContactOpen(true)} className="flex items-center gap-1">
-                      <Plus className="h-4 w-4" />
-                      <span className="hidden sm:inline">Add contact</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Add a new contact</TooltipContent>
-                </Tooltip>
+              {/* Add Contact Button */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm" onClick={() => setIsAddContactOpen(true)} className="flex items-center gap-1">
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden sm:inline">Add contact</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Add a new contact</TooltipContent>
+              </Tooltip>
             </div>
 
             <Dialog open={isDocOpen} onOpenChange={setIsDocOpen}>
@@ -1664,8 +1668,8 @@ export default function Home() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setIsExportStateDialogOpen(false)
                   setExportStateValue("")
@@ -1673,7 +1677,7 @@ export default function Home() {
               >
                 Cancel
               </Button>
-              <Button 
+              <Button
                 onClick={() => {
                   const trimmedValue = exportStateValue.trim()
                   if (!trimmedValue) {
@@ -1801,11 +1805,10 @@ export default function Home() {
                   <div
                     className="h-2 bg-gradient-to-r from-blue-400 to-purple-600 rounded-full"
                     style={{
-                      width: `${
-                        contacts.length > 0
-                          ? Math.round(((potentiallyFrenchCount + notFrenchCount + detectedCount) / contacts.length) * 100)
-                          : 0
-                      }%`,
+                      width: `${contacts.length > 0
+                        ? Math.round(((potentiallyFrenchCount + notFrenchCount + detectedCount) / contacts.length) * 100)
+                        : 0
+                        }%`,
                     }}
                   ></div>
                 </div>
@@ -1932,11 +1935,10 @@ export default function Home() {
                         variant="outline"
                         size="sm"
                         onClick={filterContactsNeedingUpdates}
-                        className={`flex items-center gap-1 ${
-                          showUpdateNeeded
-                            ? "bg-amber-100 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800"
-                            : ""
-                        }`}
+                        className={`flex items-center gap-1 ${showUpdateNeeded
+                          ? "bg-amber-100 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800"
+                          : ""
+                          }`}
                       >
                         <Filter className="h-4 w-4" />
                         <span className="hidden sm:inline">{showUpdateNeeded ? "Show All" : "Needs Update"}</span>
@@ -1992,19 +1994,18 @@ export default function Home() {
                               : contact.status === "Detected"
                                 ? "bg-purple-50 dark:bg-purple-900/20"
                                 : contact.status === "Not French"
-                                ? "bg-red-50 dark:bg-red-900/20"
-                                : "" // Not checked stays white/default
+                                  ? "bg-red-50 dark:bg-red-900/20"
+                                  : "" // Not checked stays white/default
 
                         return (
                           <React.Fragment key={contact.id}>
                             {/* Add an ID to the TableRow for scrolling */}
                             <TableRow
                               id={`contact-row-${contact.id}`}
-                              className={`cursor-pointer transition-colors hover:bg-muted/50 ${rowColorClass} ${
-                                contact.id === lastVerifiedId
-                                  ? "border-l-4 border-l-green-500 dark:border-l-green-400"
-                                  : ""
-                              }`}
+                              className={`cursor-pointer transition-colors hover:bg-muted/50 ${rowColorClass} ${contact.id === lastVerifiedId
+                                ? "border-l-4 border-l-green-500 dark:border-l-green-400"
+                                : ""
+                                }`}
                               onClick={() => toggleContactExpanded(contact.id)}
                             >
                               <TableCell onClick={(e) => e.stopPropagation()}>
@@ -2060,21 +2061,18 @@ export default function Home() {
                                 {/* Add verification status bar with 3 distinct sections */}
                                 <div className="mt-1 flex h-1.5 w-full rounded-full overflow-hidden">
                                   <div
-                                    className={`h-full ${
-                                      contact.checkedOnForebears ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                                    } flex-1`}
+                                    className={`h-full ${contact.checkedOnForebears ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                                      } flex-1`}
                                   ></div>
                                   <div className="w-0.5 bg-white dark:bg-gray-700"></div>
                                   <div
-                                    className={`h-full ${
-                                      contact.checkedOnTPS ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                                    } flex-1`}
+                                    className={`h-full ${contact.checkedOnTPS ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                                      } flex-1`}
                                   ></div>
                                   <div className="w-0.5 bg-white dark:bg-gray-700"></div>
                                   <div
-                                    className={`h-full ${
-                                      contact.checkedOnOTM ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                                    } flex-1`}
+                                    className={`h-full ${contact.checkedOnOTM ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                                      } flex-1`}
                                   ></div>
                                 </div>
                               </TableCell>
@@ -2088,19 +2086,18 @@ export default function Home() {
                                   onValueChange={(value) => handleStatusChange(contact.id, value as any)}
                                 >
                                   <SelectTrigger
-                                    className={`w-[140px] rounded-full ${
-                                      contact.status === "Potentially French"
-                                        ? "bg-green-100 dark:bg-green-900/40 border-green-200 dark:border-green-800"
-                                        : contact.status === "Not French"
-                                          ? "bg-red-100 dark:bg-red-900/40 border-red-200 dark:border-red-800"
-                                          : contact.status === "Detected"
-                                            ? "bg-purple-100 dark:bg-purple-900/40 border-purple-200 dark:border-purple-800"
-                                            : contact.status === "Duplicate"
-                                              ? "bg-amber-100 dark:bg-amber-900/40 border-amber-200 dark:border-amber-800"
-                                              : contact.status === "Not checked"
+                                    className={`w-[140px] rounded-full ${contact.status === "Potentially French"
+                                      ? "bg-green-100 dark:bg-green-900/40 border-green-200 dark:border-green-800"
+                                      : contact.status === "Not French"
+                                        ? "bg-red-100 dark:bg-red-900/40 border-red-200 dark:border-red-800"
+                                        : contact.status === "Detected"
+                                          ? "bg-purple-100 dark:bg-purple-900/40 border-purple-200 dark:border-purple-800"
+                                          : contact.status === "Duplicate"
+                                            ? "bg-amber-100 dark:bg-amber-900/40 border-amber-200 dark:border-amber-800"
+                                            : contact.status === "Not checked"
                                               ? "bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800"
                                               : ""
-                                    }`}
+                                      }`}
                                   >
                                     <SelectValue placeholder={contact.status} />
                                   </SelectTrigger>
@@ -2345,9 +2342,8 @@ export default function Home() {
                       <Card
                         key={contact.id}
                         id={`contact-row-${contact.id}`}
-                        className={`overflow-hidden cursor-pointer ${
-                          contact.id === lastVerifiedId ? "border-l-4 border-l-green-500" : ""
-                        }`}
+                        className={`overflow-hidden cursor-pointer ${contact.id === lastVerifiedId ? "border-l-4 border-l-green-500" : ""
+                          }`}
                         onClick={() => toggleContactExpanded(contact.id)}
                       >
                         <CardHeader className="pb-2">
@@ -2390,21 +2386,18 @@ export default function Home() {
                           <div className="mt-2 mb-1">
                             <div className="flex h-1.5 w-full rounded-full overflow-hidden">
                               <div
-                                className={`h-full ${
-                                  contact.checkedOnForebears ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                                } flex-1`}
+                                className={`h-full ${contact.checkedOnForebears ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                                  } flex-1`}
                               ></div>
                               <div className="w-0.5 bg-white dark:bg-gray-700"></div>
                               <div
-                                className={`h-full ${
-                                  contact.checkedOnTPS ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                                } flex-1`}
+                                className={`h-full ${contact.checkedOnTPS ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                                  } flex-1`}
                               ></div>
                               <div className="w-0.5 bg-white dark:bg-gray-700"></div>
                               <div
-                                className={`h-full ${
-                                  contact.checkedOnOTM ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
-                                } flex-1`}
+                                className={`h-full ${contact.checkedOnOTM ? "bg-blue-500" : "bg-gray-100 dark:bg-gray-800"
+                                  } flex-1`}
                               ></div>
                             </div>
                           </div>
@@ -2527,7 +2520,7 @@ export default function Home() {
                                   )}
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent>Copy Name & Open OTM</TooltipContent>
+                              <TooltipContent>Copy Address & Open OTM</TooltipContent>
                             </Tooltip>
                           </div>
                         </CardFooter>

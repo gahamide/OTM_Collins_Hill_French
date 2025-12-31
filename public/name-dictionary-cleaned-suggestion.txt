@@ -1394,11 +1394,7 @@ jean
 jean-baptiste
 jeanne
 jeannin
-jimenez
 jolivet
-jolly
-joly
-jong
 joseph
 josse
 jouan
@@ -1411,10 +1407,10 @@ jouve
 jubert
 julien
 jullien
-jung
 justin
 justine
 kaba
+kaabouch
 kabbaj
 kablan
 kacou
@@ -1461,11 +1457,11 @@ karim
 karimi
 kasmi
 kassa
+Kassam
 kassi
-kaya
 kayi
 keita
-keller
+kettani
 kemajou
 kenfack
 kengne
@@ -1478,8 +1474,6 @@ kenmogne
 kettani
 khaldi
 khalid
-khalil
-khan
 khoubbieh
 kiba
 kibamba
@@ -1517,7 +1511,6 @@ kitio
 kitoko
 kitsoukou
 kiyindou
-klein
 koa
 koagne
 kobenan
@@ -1770,9 +1763,6 @@ loiseau
 loisel
 loison
 loko
-lombard
-lopes
-lopez
 lotfi
 loua
 louppe
@@ -1804,15 +1794,12 @@ louvouezo
 louya
 louyindoula
 louzolo
-lowe
 lucas
 lukong
 lum
-ly
-m
-m affo
-m bah
-m bole
+maffo
+mbah
+mbole
 m'bra
 maarouf
 maba
@@ -1975,11 +1962,8 @@ marteau
 martel
 martineau
 martinet
-martinez
 martins
 marty
-mary
-mas
 massa
 massai
 massala
@@ -2620,7 +2604,6 @@ nguimbi
 nguimfack
 nguini
 ngum
-nguyen
 ngwa
 ngwang
 ngwe
@@ -3069,11 +3052,6 @@ sawalda
 saya
 sayi
 sbai
-schaeffer
-schmidt
-schmitt
-schneider
-schwartz
 sea
 sebti
 seguin
