@@ -36,7 +36,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import * as XLSX from "xlsx"
+// XLSX is dynamically imported on file upload/export to reduce initial bundle size (~500KB+)
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Dialog,
@@ -371,8 +371,9 @@ export default function Home() {
 
     const reader = new FileReader()
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
+        const XLSX = await import("xlsx")
         const data = e.target?.result
         const workbook = XLSX.read(data, { type: "binary" })
         const sheetName = workbook.SheetNames[0]
@@ -911,11 +912,13 @@ export default function Home() {
   }, [contacts, globalNotes, territoryZipcode, territoryPageRange, lastVerifiedId])
 
   // Add this function after the shareData function
-  const exportToExcel = useCallback(() => {
+  const exportToExcel = useCallback(async () => {
     if (contacts.length === 0) {
       alert("No contacts to export")
       return
     }
+
+    const XLSX = await import("xlsx")
 
     // Determine which contacts to export (all or selected)
     const contactsToExport =
