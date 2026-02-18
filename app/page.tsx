@@ -422,12 +422,22 @@ export default function Home() {
           }
         })
 
-        setContacts(processedContacts)
+        // Mark duplicate addresses before setting state
+        const seen = new Map<string, boolean>()
+        const deduped = processedContacts.map((c) => {
+          const key = `${c.address} ${c.city} ${c.zipcode}`.toLowerCase().replace(/\s+/g, " ").trim()
+          if (!key) return c
+          if (seen.has(key)) return { ...c, status: "Duplicate" as const }
+          seen.set(key, true)
+          return c
+        })
+
+        setContacts(deduped)
         setFileUploaded(true)
-        // Run detection automatically after import (non-blocking)
+        // Run French name detection automatically after import (non-blocking)
         setTimeout(() => {
           try {
-            ; (detectFrenchNames as any)?.(false, processedContacts)
+            ; (detectFrenchNames as any)?.(false, deduped)
           } catch (e) {
             console.warn("detectFrenchNames not available yet", e)
           }
@@ -855,6 +865,38 @@ export default function Home() {
     },
     [contacts, selectedContacts],
   )
+
+  // Detect contacts sharing the same address and mark duplicates (keeps the first, marks the rest)
+  const detectDuplicateAddresses = useCallback((sourceContacts?: EnhancedContact[]) => {
+    const base = sourceContacts ?? contacts
+    if (!base || base.length === 0) return 0
+
+    const seen = new Map<string, string>()
+    let duplicateCount = 0
+
+    const updated = base.map((c) => {
+      const normalized = `${c.address} ${c.city} ${c.zipcode}`
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim()
+
+      if (!normalized) return c
+
+      if (seen.has(normalized)) {
+        if (c.status !== "Duplicate") {
+          duplicateCount++
+          return { ...c, status: "Duplicate" as const }
+        }
+        return c
+      }
+
+      seen.set(normalized, c.id)
+      return c
+    })
+
+    setContacts(updated)
+    return duplicateCount
+  }, [contacts])
 
   // Function to import data
   const importData = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
